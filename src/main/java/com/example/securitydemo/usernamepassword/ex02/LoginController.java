@@ -1,4 +1,4 @@
-package com.example.securitydemo.ex02;
+package com.example.securitydemo.usernamepassword.ex02;
 
 
 import org.springframework.http.ResponseEntity;

@@ -1,10 +1,11 @@
-package com.example.securitydemo.ex02;
+package com.example.securitydemo.usernamepassword.ex03;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.User;
@@ -16,32 +17,34 @@ import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
- * AuthenticationManager 게시하기
- * 폼 로그인 대신 서비스나 컨트롤러에서 인증하는 방법
+ * 2. AuthenticationManager 재정의 하여 커스터마이징
  */
 @Configuration
 @EnableWebSecurity
-public class ExPublishAuthenticationManager {
+public class ExCustomizeAuthenticationManager2 {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.
                 authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/login").permitAll()
                         .anyRequest().authenticated()
-                );
+                )
+                .httpBasic(Customizer.withDefaults())
+                .formLogin(Customizer.withDefaults())
+                .authenticationManager(authenticationManager());
 
         return http.build();
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService,
-                                                       PasswordEncoder passwordEncoder) {
+    public AuthenticationManager authenticationManager() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
-        authenticationProvider.setUserDetailsService(userDetailsService);
-        authenticationProvider.setPasswordEncoder(passwordEncoder);
+        authenticationProvider.setUserDetailsService(userDetailsService());
+        authenticationProvider.setPasswordEncoder(passwordEncoder());
 
-        return new ProviderManager(authenticationProvider);
+        ProviderManager providerManager = new ProviderManager(authenticationProvider);
+        providerManager.setEraseCredentialsAfterAuthentication(false);
+        return providerManager;
     }
 
     @Bean

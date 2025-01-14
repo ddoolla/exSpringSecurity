@@ -1,4 +1,4 @@
-package com.example.securitydemo.ex01;
+package com.example.securitydemo.usernamepassword.ex01;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
